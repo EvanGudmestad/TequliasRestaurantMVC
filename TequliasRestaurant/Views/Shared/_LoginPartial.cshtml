@@ -1,0 +1,44 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav">
+@if (SignInManager.IsSignedIn(User))
+{
+        <li class="nav-item">
+            <!--Determine number of cart items saved in session-->
+            @{
+                int cartCount = 0;
+                if (Context.Session.Get<OrderViewModel>("OrderViewModel") != null)
+                {
+                    OrderViewModel model = Context.Session.Get<OrderViewModel>("OrderViewModel");
+                    cartCount = model.OrderItems.Sum(product => product.Quantity);
+                }
+            }
+            <a class="nav-link position-relative" asp-action="Cart" asp-controller="Order">
+                <i class="bi bi-cart2"></i>
+                <span class="position-absolute start-100 translate-middle badge rounded-pill bg-success">
+                    @cartCount
+                    <span class="visually-hidden">Cart Quantity</span>
+                </span>
+            </a>
+        </li>
+    <li class="nav-item">
+        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
+    </li>
+    <li class="nav-item">
+        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+        </form>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+    </li>
+}
+</ul>
